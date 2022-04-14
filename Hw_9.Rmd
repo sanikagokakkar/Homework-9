@@ -1,0 +1,49 @@
+---
+title: "Homework 9"
+output: html_document
+---
+
+```{r}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(dplyr)
+library(ggplot2)
+```
+
+```{r}
+av <- read.csv("https://raw.githubusercontent.com/fivethirtyeight/data/master/avengers/avengers.csv", stringsAsFactors = FALSE)
+View(av)
+str(av)
+```
+
+#Part 1
+```{r}
+av1 = av %>% filter(Name.Alias != "")
+av1 = av1 %>% filter(Name.Alias != "Vance Astrovik")
+```
+
+#Deaths
+```{r}
+deaths = av1 %>% gather(key = time, value = death, c(11, 13, 15, 17, 19)) %>%
+  select(Name.Alias, time, death) %>% 
+  mutate(time = parse_number(time))
+```
+
+#Retruns
+```{r}
+returns = av1 %>% gather(key = time, value = return, c(12, 14, 16, 18, 20)) %>%
+  select(Name.Alias, time, return) %>%
+  mutate(time = parse_number(time))
+```
+
+```{r}
+new.av = left_join(deaths, returns, by = c("Name.Alias", "time"))
+```
+
+#Part 2
+#It states that 'In fact, Hawkeye died twice!'
+```{r}
+hawkeye = new.av %>% dplyr::filter(Name.Alias == "Clinton Francis Barton" & death == "YES")
+nrow(hawkeye)
+```
+#This statement is True.
